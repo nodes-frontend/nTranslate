@@ -1,64 +1,130 @@
-# Nodes Module Starter Kit bids you welcome!
-
-Before you get started writing your next Angular Module, you need to set up a few things:
-
-- Come up with an awesome name for your module
-- Rename the files in the `src/` folder to your awesome name
-- Fill out the information in `package.json` and `bower.json` (name, description, etc.)
-- Correct the references in `index.html` to the styles and scripts
-- Create a repository for your module on Github
-
+nCore.nTranslate
+================
+*This module is build specifically for our nStack cloud solutions. If you don't work with any Nodes Agency services, this module will be of little use to you.*
 ------
 
-When you are ready to release your package to the world follow these simple steps:
+This module makes working with nStack translate easy, and helps your applications performance and loadtime by persisting translation values in localstorage.
 
-- In the gruntfile, make sure to add all your modules to the concat src block (and make sure they are loaded in correct order - look further down for an example)
-- Run grunt build to generate release oriented files
-- In your index.html file, replace your src files with the dist file, and check that everything works
-- Commit & Push
+### Getting started
 
-To release your module on bower follow these steps (After building!)
+##### Bower
 
-- From the command-line run: `bower release [PACKAGE-NAME] [PACKAGE-GITHUB-URL]`
-
-example: `bower release nCore https://github.com/nodes-galactic/nCore`
-
-Done! You can now run `bower install PACKAGE-NAME` in a project! Yay!
-
------
-
-### Concatination Order
-
-This requires a manual setup for each project, as the files needed vary.
-
-1. Module definition
-2. Providers
-3. Config / Run / Decorators
-4. Factories / Services
-5. Directives
-6. Templates
-
-```javascript
-concat: {
-	options: {
-		banner: '<%= meta.banner %>'
-	},
-	dist: {
-		src: [
-			'.tmp/scripts/*.module.js',
-			'.tmp/scripts/*.provider.js',
-			'.tmp/scripts/*.*.directive.js',
-			'.tmp/scripts/templates.js'
-		],
-		dest: '<%= yeoman.dist %>/<%= pkg.name %>.js'
-	}
-},
+```bash
+bower install nTranslate --save
 ```
 
------
+##### Require nCore.nTranslate
 
-### We also recommend doing your fellow developers a few favors:
+```javascript
+angular.module('app', [
+    'nCore.nTranslate'
+]);
+```
 
-- Write a guide on how to use your module in the `readme.md` file
-- Write a few demo examples so people can see the intended use
-- If you want to go all the way, make a Github Pages branch, this will give your module a little home on the web where you can host your demos
+Usage
+=====
+
+In order to use the nTranslate module, you must first configure some required options:
+
+```javascript 
+angular.module('app')
+	.configure(function(nTranslateConfigProvider) {
+		nTranslateConfigProvider.configure({
+			appId: 'foo',
+			apiKey: 'bar'
+		});
+	});
+```
+
+The ```appId``` and ```apiKey``` are mandatory, if these are not provided we throw exceptions at you.
+
+##### About localstorage persistance
+
+In order to take advantage of persisting values in localstorage, one additional option is required.
+You will have to configure the ```storageIdentifier``` option with a name that identifies this app from others.
+We do this in order to be able to differentiate between development projects, as these all usually are served from localhost,
+which can have some annoying side effects as localstorage is tied to the domain the site is served from.
+
+##### Options
+
+Following is a list of options that can be configured during the config phase of your Angular application:
+
+| Key               | Default                                                                 | Description                                                              |
+| ----------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| root              | ```'https://nstack.io/api'```                                           | The root nStack endpoint                                                 |
+| apiVersion        | ```'v1'```                                                              | The API version                                                          |
+| platform          | ```'web'```                                                             | The platform from which to get keys                                      |
+| endpoints         | ```{languages:'languages',bestFit:'languages/best_fit', keys:'keys'}``` | An object containing the three queryable endpoints                       |
+| apiKey *required* | ```null```                                                              | The apiKey for authorizing the application                               |
+| appId *required*  | ```null```                                                              | The appId for identifying the application                                |
+| storageIdentifier | ```null```                                                              | A unique identifier for localStorage *required if ```persist``` is true* |
+| persist           | ```true```                                                              | Persist translation data in localstorage                                 |
+| expires           | ```Date.now() + (24 * 60 * 60 * 1000)``` (24 Hours)                     | How long should translation be persisted for?                            |
+
+##### Methods
+
+The nTranslate services has the following methods:
+
+###### ```getLanguages([showInactiveLanguages, forceExpiry])```
+
+Returns an array of all languages.
+
+Optional arguments:
+
+- ```showInactiveLanguages``` - If true, also fetches languages that has not yet been activated (for development purposes)
+- ```forceExpiry``` - If true, invalidates the cache and forces data to be loaded from the API
+
+###### ```getBestFitLanguage([showInactiveLanguages, forceExpiry])```
+
+Returns the bestFitLanguage object. This is done by the server compairing the Accept-Languages header in the request with the registerred languages.
+
+Optional arguments:
+
+- ```showInactiveLanguages``` - If true, also compares against languages that has not yet been activated (for development purposes)
+- ```forceExpiry``` - If true, invalidates the cache and forces data to be loaded from the API
+
+###### ```getAllKeys([forceExpiry])```
+
+Returns an array of all translation sections and the corresponding key/value pairs
+
+Optional arguments:
+
+- ```forceExpiry``` - If true, invalidates the cache and forces data to be loaded from the API
+
+###### ```getKeysFromSection(section, [forceExpiry])```
+
+Returns an object of a single translation section and the corresponding key/value pairs
+
+Optional arguments:
+
+- ```forceExpiry``` - If true, invalidates the cache and forces data to be loaded from the API
+
+---
+
+##### Example
+
+- Resolve in a ui-router state configuration
+
+This is our recommended approach:
+Use our abstract ```application``` state and have the application wait for the all sections and keys to be loaded (either from localstorage or from the API)
+*or*
+Resolve one section pr. state.
+
+```javascript 
+angular.module('application')
+	.configure(function($stateProvider) {
+		$stateProvider
+			.state({
+				name: 'application',
+				abstract: true,
+				views: {},
+				resolve: {
+					translate: function(nTranslate) {
+						return nTranslate.getAllKeys();
+						// or
+						return nTranslate.getKeysFromSection('fooBar');
+					}
+				}
+			})
+	});
+```
