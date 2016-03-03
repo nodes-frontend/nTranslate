@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<base href="/">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+	</head>
+	<body ng-app="demoApp">
+
+		<div ui-view></div>
+
+		<!-- bower:js -->
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/ngstorage/ngStorage.js"></script>
+		<script src="bower_components/angular-mocks/angular-mocks.js"></script>
+		<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+		<!-- endbower -->
+
+		<!--<script src="src/nTranslate.module.js"></script>-->
+		<!--<script src="src/nTranslate.provider.js"></script>-->
+		<!--<script src="src/nTranslate.service.js"></script>-->
+		<script src="dist/nTranslate.js"></script>
+
+		<script>
+			angular.module('demoApp', ['nCore.nTranslate', 'ui.router']);
+
+			angular.module('demoApp').config(appConfig);
+
+			function appConfig(nTranslateConfigProvider, $stateProvider, $urlRouterProvider) {
+
+				/**
+				 * DONT FORGET TO CONFIGURE nTranslateConfigProvider with App ID and API Keys!!!!!!!
+				 */
+				nTranslateConfigProvider.configure({
+					appId: 'FMmfQ92q1bUEKLT7F3fUCZOkFcYsC0rbacG5',
+					apiKey: 'b8h1pNsCXdZYjBLFY6xx2F8wUOPXyzaRrWLF',
+					storageIdentifier: 'demoApp'
+				});
+
+				$urlRouterProvider.otherwise('/');
+
+				$stateProvider
+					.state({
+						name: 'application',
+						url: '/',
+						resolve: {
+							translation: function(nTranslate) {
+								return nTranslate.getAllKeys(true);
+							}
+						},
+						views: {
+							'': {
+								templateUrl: 'demoView.html',
+								controller: 'demoController',
+								controllerAs: 'demo'
+							}
+						}
+					});
+			}
+
+			angular.module('demoApp').controller('demoController', demoController);
+
+			function demoController(nTranslate, translation) {
+
+				var vm = this;
+
+				vm.translate = translation;
+
+				nTranslate.getKeysFromSection('herounit')
+						.then(function(keys) {
+							console.log(keys);
+						})
+			}
+		</script>
+	</body>
+</html>
