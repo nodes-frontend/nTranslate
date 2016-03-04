@@ -9,7 +9,7 @@
     "url": "https://github.com/nodes-frontend/nTranslate"
   },
   "main": [
-    ""
+    "dist/nTranslate.js"
   ],
   "ignore": [
     "demo"
