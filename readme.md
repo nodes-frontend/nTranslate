@@ -99,6 +99,14 @@ Optional arguments:
 
 - ```forceExpiry``` - If true, invalidates the cache and forces data to be loaded from the API
 
+###### ```getAllKeysSync()```
+
+Returns an array of all translation sections and the corresponding key/value pairs from local storage syncronously (not using a promise)
+
+###### ```getKeysFromSection(section, [forceExpiry])```
+
+Returns an object of a single translation section and the corresponding key/value pairs from local storage syncronously (not using a promise)
+
 ---
 
 ##### Example

@@ -41,7 +41,9 @@
 			getLanguages: getLanguages,
 			getBestFitLanguage: getBestFitLanguage,
 			getAllKeys: getAllKeys,
-			getKeysFromSection: getKeysFromSection
+			getKeysFromSection: getKeysFromSection,
+			getAllKeysSync: getAllKeysSync,
+			getKeysFromSectionSync: getKeysFromSectionSync
 		};
 
 		return service;
@@ -213,6 +215,34 @@
 
 			return deferred.promise;
 
+		}
+
+		/**
+		 * Fetches all translation sections from the local storage synchronously.
+		 *
+		 * @param section {string} - The section to be fetched
+		 * @returns {array}
+		 */
+		function getAllKeysSync() {
+			if(!angular.isDefined($localStorage[configuration.storageIdentifier + '-Translate'])) {
+				return [];
+			} else {
+				return $localStorage[configuration.storageIdentifier + '-Translate']
+			}
+		}
+
+		/**
+		 * Fetches a single translation section from the local storage synchronously.
+		 *
+		 * @param section {string} - The section to be fetched
+		 * @returns {object}
+		 */
+		function getKeysFromSectionSync(section) {
+			if(!angular.isDefined($localStorage[configuration.storageIdentifier + '-Translate'][section])) {
+				return {};
+			} else {
+				return $localStorage[configuration.storageIdentifier + '-Translate'][section];
+			}
 		}
 		
 		/**
