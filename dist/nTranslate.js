@@ -7,6 +7,8 @@
 (function () {
 	'use strict';
 
+	// Start working please.
+
 	angular.module('nCore.nTranslate', ['ngStorage']);
 
 })();
