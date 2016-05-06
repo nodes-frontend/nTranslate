@@ -1,6 +1,5 @@
 /**
  * nCore Module, working with nStack Translate has never been this easy!
- * @version v - 2016-05-06
  * @link https://www.github.com/nodes-frontend/nTranslate
  * @author Dennis Haulund Nielsen
  * @license MIT License, http://www.opensource.org/licenses/MIT

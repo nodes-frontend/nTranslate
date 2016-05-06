@@ -35,7 +35,6 @@ module.exports = function (grunt) {
 		meta: {
 			banner: '/**\n' +
 			' * <%= pkg.description %>\n' +
-			' * @version v<%= pkg.version || "latests" %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
 			' * @link <%= pkg.homepage %>\n' +
 			' * @author <%= pkg.  author %>\n' +
 			' * @license MIT License, http://www.opensource.org/licenses/MIT\n' +
