@@ -136,7 +136,7 @@
 		
 		/**
 		 * Fetches Array of translation sections, each with their key/values.
-		 *
+		 * 
 		 * @param forceExpiry {bool} - If true, clear and invalidate cache
 		 * @param acceptLanguage {string} - The locale to set in the x-accept-language header
 		 * @returns {Promise}
