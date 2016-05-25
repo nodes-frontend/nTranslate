@@ -7,8 +7,6 @@
 (function () {
 	'use strict';
 
-	// Start working please.
-
 	angular.module('nCore.nTranslate', ['ngStorage']);
 
 })();
@@ -195,14 +193,15 @@
 		 * Fetches Array of translation sections, each with their key/values.
 		 *
 		 * @param forceExpiry {bool} - If true, clear and invalidate cache
+		 * @param acceptLanguage {string} - The locale to set in the x-accept-language header
 		 * @returns {Promise}
 		 */
-		function getAllKeys(forceExpiry) {
+		function getAllKeys(forceExpiry, acceptLanguage) {
 
 			var deferred = $q.defer();
 
 			var requestParams = {
-				headers: _constructHeaders()
+				headers: _constructHeaders(acceptLanguage || false)
 			};
 
 			if(forceExpiry) {
@@ -235,9 +234,10 @@
 		 * 
 		 * @param section {string} - The section to be fetched
 		 * @param forceExpiry {bool} - If true, clear and invalidate cache
+		 * @param acceptLanguage {string} - The locale to set in the x-accept-language header
 		 * @returns {Promise}
 		 */
-		function getKeysFromSection(section, forceExpiry) {
+		function getKeysFromSection(section, forceExpiry, acceptLanguage) {
 
 			if(!section) {
 				throw $exceptionHandler('missingfields', 'Missing section argument');
@@ -246,7 +246,7 @@
 			var deferred = $q.defer();
 
 			var requestParams = {
-				headers: _constructHeaders()
+				headers: _constructHeaders(acceptLanguage || false)
 			};
 
 			if(forceExpiry) {
@@ -257,17 +257,17 @@
 				deferred.resolve($localStorage[configuration.storageIdentifier + '-Translate'][section]);
 			} else {
 				$http.get(_constructUrl(configuration.endpoints.keys + '/' + section), requestParams)
-						.then(function nTranslateGetKeysFromSectionSuccess(data) {
-							if(configuration.persist) {
-								_persistSectionToStorage(section, data);
-								deferred.resolve($localStorage[configuration.storageIdentifier + '-Translate'][section]);
-							} else {
-								deferred.resolve(data.data.data);
-							}
-						})
-						.catch(function nTranslateGetKeysFromSectionError(reason) {
-							deferred.reject(reason);
-						});
+					.then(function nTranslateGetKeysFromSectionSuccess(data) {
+						if(configuration.persist) {
+							_persistSectionToStorage(section, data);
+							deferred.resolve($localStorage[configuration.storageIdentifier + '-Translate'][section]);
+						} else {
+							deferred.resolve(data.data.data);
+						}
+					})
+					.catch(function nTranslateGetKeysFromSectionError(reason) {
+						deferred.reject(reason);
+					});
 			}
 
 			return deferred.promise;
@@ -304,14 +304,22 @@
 		
 		/**
 		 * Convenience method for creating the proper authorization headers required by nStack.
+		 * @param acceptLanguage {string} - The locale to set in the x-accept-language header
 		 * @returns {Object}
 		 * @private
 		 */
-		function _constructHeaders() {
-			return {
+		function _constructHeaders(acceptLanguage) {
+
+			var headers = {
 				'X-Application-Id': configuration.appId,
 				'X-Rest-Api-Key': configuration.apiKey
 			};
+
+			if(acceptLanguage) {
+				headers['X-Accept-Language'] = acceptLanguage;
+			}
+
+			return headers;
 		}
 		
 		/**
