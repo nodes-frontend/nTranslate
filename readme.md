@@ -1,5 +1,5 @@
-nCore.nTranslate
-================
+# ⛔️ [DEPRECATED] nCore.nTranslate
+
 *This module is build specifically for our nStack cloud solutions. If you don't work with any Nodes Agency services, this module will be of little use to you.*
 ------
 
