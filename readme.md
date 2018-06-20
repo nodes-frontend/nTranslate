@@ -1,4 +1,5 @@
-# ⛔️ [DEPRECATED] nCore.nTranslate
+# nCore.nTranslate
+_Not maintained by Nodes anymore_
 
 *This module is build specifically for our nStack cloud solutions. If you don't work with any Nodes Agency services, this module will be of little use to you.*
 ------
